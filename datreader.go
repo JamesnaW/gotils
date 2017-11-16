@@ -4,6 +4,7 @@ import (
 	"strings"
   // "fmt"
   "github.com/djimenez/iconv-go"
+  "html"
 )
 
 type DatReads []DatRead
@@ -39,6 +40,21 @@ func DatReaderDecode(data string, prefix DatReads, decodeFrom string, decodeTo s
     }
     str, _ := iconv.ConvertString(get, decodeFrom, decodeTo)
     m[q.Name] = str
+  }
+  return m
+}
+
+func DatToSliceDecode(data string, prefix DatReads, decodeFrom string, decodeTo string) []string {
+  m := []string{}
+  for _, q := range prefix {
+    get := strings.TrimSpace(data[q.ReadAt.StartAt: q.ReadAt.EndAt])
+    if get == "" {
+      m = append(m, "NULL")
+      continue
+    }
+    str, _ := iconv.ConvertString(get, decodeFrom, decodeTo)
+
+    m = append(m, html.EscapeString(str))
   }
   return m
 }

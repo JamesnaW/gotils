@@ -1,7 +1,6 @@
 package gotils
 
 import (
-	"fmt"
 	"io"
   "encoding/csv"
   "reflect"
@@ -20,20 +19,22 @@ func CsvReader(buff io.Reader) ([][]string, error) {
   return r.ReadAll()
 }
 
-func CsvToStruct(records [][]string, result interface{}) ([]interface{}, error) {
-  var a []interface{}
+func CsvToMap(records [][]string) ([]map[string]interface{}, error) {
+  var a []map[string]interface{}
   if len(records) == 0 {
     return nil, &errorString{"No csv records!"}
   }
   for i, e := range records {
     if i != 0 {
-      r, err := ParseStruct(setVal(records[0], e), result)
-      if err != nil {
-        continue
-      }
+      // r, err := ParseStruct(setVal(records[0], e), result)
+      // if err != nil {
+      //   continue
+      // }
+      r := setVal(records[0], e)
       a = append(a, r)
     }
   }
+
   return a, nil
 }
 
@@ -58,30 +59,26 @@ func setVal(keys []string, val []string) map[string]interface{} {
   return m
 }
 
-func mapValue(value []string, obj interface{}) interface{} {
-  // v := reflect.ValueOf(&obj)
-  // for i, e := range value {
-    // setType(v.Field(i), e)
-    // v.Field(i).Set(reflect.ValueOf(e))
+// func mapValue(value []string, obj interface{}) interface{} {
+//   // v := reflect.ValueOf(&obj)
+//   // for i, e := range value {
+//     // setType(v.Field(i), e)
+//     // v.Field(i).Set(reflect.ValueOf(e))
 
-  // }
-  val := reflect.ValueOf(&obj).Elem()
+//   // }
+//   val := reflect.ValueOf(&obj).Elem()
 
-  for i := 0; i < val.NumField(); i++ {
-    valueField := val.Field(i)
-    typeField := val.Type().Field(i)
-    fmt.Println(valueField)
-    fmt.Println(typeField)
-    // if key == strings.ToLower(typeField.Name) {
-    //   return valueField.Interface().(string)
-    // }
-  }
-  return &obj
-}
+//   for i := 0; i < val.NumField(); i++ {
+//     valueField := val.Field(i)
+//     typeField := val.Type().Field(i)
+//     // if key == strings.ToLower(typeField.Name) {
+//     //   return valueField.Interface().(string)
+//     // }
+//   }
+//   return &obj
+// }
 
 func setType(f reflect.Value, v string) {
-  // fmt.Println(v)
-  // fmt.Println(f)
   switch f.Interface().(type){
   case string:
     f.SetString(v)
